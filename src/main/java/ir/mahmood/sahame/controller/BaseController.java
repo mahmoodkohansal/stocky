@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
@@ -30,28 +35,31 @@ public class BaseController {
     }
 
     @GetMapping("/test")
-    public String test() {
+    public String test() throws ExecutionException, InterruptedException {
         try {
 //            String stockPrices = tsetmcService.getStockPrices("46348559193224090");
-            List<String> stockIds = tsetmcService.getStockIds();
+            List<String> newStockIds = tsetmcService.getStockIds();
 
-            log.info("Stock Ids fetched from TSETMC");
+            log.info("New Stock Ids fetched from TSETMC");
+
+            List<String> persistedStockIds = stockService.list().stream().map(StockDto::getTsetmcId)
+                    .collect(Collectors.toList());
+
+            log.info("Persisted Stock Ids fetched from DB");
+
+            List<String> differenceStockIds = newStockIds.stream().filter(Predicate.not(persistedStockIds::contains)).collect(Collectors.toList());
+
+            log.info("Starting to get " + differenceStockIds.size() + " new stock data from TSETMC");
 
             List<StockDto> stockDtos = new ArrayList<>();
-
-            int count = 0;
-            for (String stockId: stockIds) {
-                stockDtos.add(tsetmcService.getStockDetails(stockId));
-                count += 1;
-
-                if (count % 10 == 0) {
-                    log.info("Stock " + (count - 10)  + " - " + count + " are ready to persist in DB");
-                    stockService.bulkStore(stockDtos);
-                    log.info("Stock " + (count - 10)  + " - " + count + " persisted in DB");
-                }
+            for (String stockId: differenceStockIds) {
+                stockDtos.add(tsetmcService.getStockDetails(stockId).get());
             }
+            log.info("Get all stocks data from TSETMC and create DTOs");
 
-            log.info("Stock Details persist in DB");
+            stockService.bulkStore(stockDtos);
+
+            log.info("Stock Details persisted in DB");
 
             return "Done";
         } catch (TSETMCException e) {

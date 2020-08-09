@@ -33,4 +33,10 @@ public class StockService {
 
         stockRepository.saveAll(stockEntities);
     }
+
+    public List<StockDto> list() {
+        return stockRepository.findAll().stream().map(
+                stockEntity -> modelMapper.map(stockEntity, StockDto.class)
+        ).collect(Collectors.toList());
+    }
 }

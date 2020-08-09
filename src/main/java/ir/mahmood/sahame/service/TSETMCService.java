@@ -1,5 +1,6 @@
 package ir.mahmood.sahame.service;
 
+import io.netty.util.concurrent.CompleteFuture;
 import ir.mahmood.sahame.constant.MarketType;
 import ir.mahmood.sahame.dto.StockDto;
 import ir.mahmood.sahame.exception.TSETMCException;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,7 +76,8 @@ public class TSETMCService {
         }
     }
 
-    public StockDto getStockDetails(String stockId) throws TSETMCException {
+    @Async
+    public CompletableFuture<StockDto> getStockDetails(String stockId) throws TSETMCException {
         log.info("Start getting stock " + stockId + " Detail");
 
         String url = "Loader.aspx?ParTree=151311&i=" + stockId;
@@ -105,7 +109,7 @@ public class TSETMCService {
                 stockDto.setSymbol("");
             }
 
-            return stockDto;
+            return CompletableFuture.completedFuture(stockDto);
         }
     }
 

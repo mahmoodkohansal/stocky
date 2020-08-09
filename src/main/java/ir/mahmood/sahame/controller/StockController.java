@@ -1,6 +1,8 @@
 package ir.mahmood.sahame.controller;
 
+import ir.mahmood.sahame.dto.StockDto;
 import ir.mahmood.sahame.exception.TSETMCException;
+import ir.mahmood.sahame.service.StockService;
 import ir.mahmood.sahame.service.TSETMCService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,27 +11,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Log4j2
 @RestController
 @RequestMapping("/api/stock/")
 public class StockController {
 
-    public TSETMCService tsetmcService;
+    private TSETMCService tsetmcService;
+    private StockService stockService;
 
     @Autowired
-    public StockController(TSETMCService tsetmcService) {
+    public StockController(TSETMCService tsetmcService, StockService stockService) {
         this.tsetmcService = tsetmcService;
+        this.stockService = stockService;
     }
 
-    @GetMapping("/test")
-    public String test() {
+    @GetMapping("/update-stocks-data")
+    public String updateStocksBaseData() throws ExecutionException, InterruptedException {
         try {
-//            String stockPrices = tsetmcService.getStockPrices("46348559193224090");
-            List<String> stockPrices = tsetmcService.getStockIds();
-            log.info(stockPrices);
-            return String.join(" ,", stockPrices);
+            List<String> stockIds = tsetmcService.getStockIds();
+
+            log.info("Stock Ids fetched from TSETMC");
+
+            List<StockDto> stockDtos = new ArrayList<>();
+            for (String stockId: stockIds) {
+                stockDtos.add(tsetmcService.getStockDetails(stockId).get());
+            }
+            log.info("Get all stocks data from TSETMC and create DTOs");
+
+            stockService.bulkStore(stockDtos);
+
+            log.info("Stock Details persist in DB");
+
+            return "Done";
         } catch (TSETMCException e) {
             log.error(e, e);
             return e.getMessage();
