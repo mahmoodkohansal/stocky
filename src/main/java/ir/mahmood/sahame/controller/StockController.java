@@ -6,6 +6,9 @@ import ir.mahmood.sahame.service.StockService;
 import ir.mahmood.sahame.service.TSETMCService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/stock/")
+@RequestMapping("/api/stocks/")
 public class StockController {
 
     private TSETMCService tsetmcService;
@@ -31,7 +34,7 @@ public class StockController {
         this.stockService = stockService;
     }
 
-    @GetMapping("/update-stocks-data")
+    @GetMapping("/update-data")
     public String updateStocksBaseData() throws ExecutionException, InterruptedException {
         try {
             List<String> newStockIds = tsetmcService.getStockIds();
@@ -64,9 +67,10 @@ public class StockController {
         }
     }
 
-    @PostMapping("/buy")
-    public void buy() {
-
+    @GetMapping("/")
+    public Page<StockDto> listStocks() {
+        Pageable pageable = PageRequest.of(0, 10);
+        return stockService.list(pageable);
     }
 
     @PostMapping("/sell")

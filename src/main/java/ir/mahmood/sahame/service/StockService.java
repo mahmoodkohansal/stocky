@@ -3,8 +3,11 @@ package ir.mahmood.sahame.service;
 import ir.mahmood.sahame.dto.StockDto;
 import ir.mahmood.sahame.entity.StockEntity;
 import ir.mahmood.sahame.repository.StockRepository;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,5 +41,11 @@ public class StockService {
         return stockRepository.findAll().stream().map(
                 stockEntity -> modelMapper.map(stockEntity, StockDto.class)
         ).collect(Collectors.toList());
+    }
+
+    public Page<StockDto> list(Pageable pageable) {
+        Page<StockEntity> stockEntities = stockRepository.findAll(pageable);
+
+        return stockEntities.map(stockEntity -> modelMapper.map(stockEntity, StockDto.class));
     }
 }

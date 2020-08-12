@@ -12,12 +12,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class BaseConfiguration {
 
     @Value("${tsetmc.base.url}")
-    private String tsetmtBaseUrl;
+    private String tsetmcBaseUrl;
 
     @Bean("WebClient")
     public WebClient getWebClient() {
         return WebClient.builder()
-                .baseUrl(tsetmtBaseUrl)
+                .baseUrl(tsetmcBaseUrl)
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(configurer -> configurer
                                 .defaultCodecs()
