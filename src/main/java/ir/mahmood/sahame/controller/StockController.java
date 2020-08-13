@@ -7,7 +7,6 @@ import ir.mahmood.sahame.service.TSETMCService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,8 +67,8 @@ public class StockController {
     }
 
     @GetMapping("/")
-    public Page<StockDto> listStocks() {
-        Pageable pageable = PageRequest.of(0, 10);
+    public Page<StockDto> listStocks(Pageable pageable) {
+        log.info(pageable);
         return stockService.list(pageable);
     }
 
