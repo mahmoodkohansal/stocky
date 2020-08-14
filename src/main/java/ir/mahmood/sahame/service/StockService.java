@@ -42,8 +42,14 @@ public class StockService {
         ).collect(Collectors.toList());
     }
 
-    public Page<StockDto> list(Pageable pageable) {
-        Page<StockEntity> stockEntities = stockRepository.findAll(pageable);
+    public Page<StockDto> list(Pageable pageable, String search) {
+        Page<StockEntity> stockEntities;
+
+        if (search == null) {
+            stockEntities = stockRepository.findAll(pageable);
+        } else {
+            stockEntities = stockRepository.findBySymbolContaining(search, pageable);
+        }
 
         return stockEntities.map(stockEntity -> modelMapper.map(stockEntity, StockDto.class));
     }
