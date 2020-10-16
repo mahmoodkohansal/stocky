@@ -17,6 +17,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+                .csrf().disable()
                 .authorizeExchange()
 //                .pathMatchers("/api/stock/**")
 //                .hasAnyAuthority()
