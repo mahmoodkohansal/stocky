@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @Component
 @RestController
-@RequestMapping("/")
+@RequestMapping("/site/")
 public class BaseController {
 
     private TSETMCService tsetmcService;
@@ -35,36 +35,7 @@ public class BaseController {
     }
 
     @GetMapping("/test")
-    public String test() throws ExecutionException, InterruptedException {
-        try {
-//            String stockPrices = tsetmcService.getStockPrices("46348559193224090");
-            List<String> newStockIds = tsetmcService.getStockIds();
-
-            log.info("New Stock Ids fetched from TSETMC");
-
-            List<String> persistedStockIds = stockService.list().stream().map(StockDto::getTsetmcId)
-                    .collect(Collectors.toList());
-
-            log.info("Persisted Stock Ids fetched from DB");
-
-            List<String> differenceStockIds = newStockIds.stream().filter(Predicate.not(persistedStockIds::contains)).collect(Collectors.toList());
-
-            log.info("Starting to get " + differenceStockIds.size() + " new stock data from TSETMC");
-
-            List<StockDto> stockDtos = new ArrayList<>();
-            for (String stockId: differenceStockIds) {
-                stockDtos.add(tsetmcService.getStockDetails(stockId).get());
-            }
-            log.info("Get all stocks data from TSETMC and create DTOs");
-
-            stockService.bulkStore(stockDtos);
-
-            log.info("Stock Details persisted in DB");
-
-            return "Done";
-        } catch (TSETMCException e) {
-            log.error(e, e);
-            return e.getMessage();
-        }
+    public String test() {
+        return "1";
     }
 }

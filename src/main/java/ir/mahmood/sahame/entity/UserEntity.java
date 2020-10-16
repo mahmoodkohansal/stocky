@@ -10,11 +10,12 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity()
+@Entity
 @Table(name = "user")
 public class UserEntity extends BaseEntity<Integer> {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String username;
