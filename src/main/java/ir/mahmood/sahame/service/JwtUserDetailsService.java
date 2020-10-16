@@ -17,18 +17,14 @@ import java.util.ArrayList;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder bcryptEncoder;
-
-    private final ModelMapper modelMapper;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
-    public JwtUserDetailsService(UserRepository userRepository, PasswordEncoder bcryptEncoder, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.bcryptEncoder = bcryptEncoder;
-        this.modelMapper = modelMapper;
-    }
+    private PasswordEncoder bcryptEncoder;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,6 +34,24 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
         return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(),
                 new ArrayList<>());
+    }
+
+    public String checkUserLoginStrategy(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username);
+        if (userEntity == null) {
+            // TODO send otp
+            // persist username
+            userEntity = new UserEntity();
+            userEntity.setUsername(username);
+            userRepository.save(userEntity);
+            return "first-register";
+        } else if (userEntity.getPassword() == null) {
+            // TODO send otp
+            return "second-register";
+        } else {
+            return "password";
+        }
+
     }
 
     public UserEntity save(UserDto userDto) {

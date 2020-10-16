@@ -36,6 +36,11 @@ public class JwtAuthenticationController {
         this.userDetailsService = userDetailsService;
     }
 
+    @GetMapping(value = "/check-username")
+    public ResponseEntity<?> checkUsername(@RequestParam String username) throws Exception {
+        return ResponseEntity.ok(userDetailsService.checkUserLoginStrategy(username));
+    }
+
     @PostMapping(value = "/token")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         log.info("Request for authentication for {} {}", authenticationRequest.getUsername(), authenticationRequest.getPassword());
