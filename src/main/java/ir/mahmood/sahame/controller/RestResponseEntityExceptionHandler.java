@@ -10,8 +10,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -19,7 +20,7 @@ public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value
-            = { IllegalArgumentException.class, IllegalStateException.class })
+            = {IllegalArgumentException.class, IllegalStateException.class})
     protected ResponseEntity<Object> handleConflict(
             RuntimeException ex, WebRequest request) {
         Map<String, Object> bodyOfResponse = new HashMap<>();
@@ -30,17 +31,17 @@ public class RestResponseEntityExceptionHandler
     }
 
     @ExceptionHandler(value
-            = { ConstraintViolationException.class })
+            = {ConstraintViolationException.class})
     protected ResponseEntity<Object> handleValidation(
             ConstraintViolationException ex, WebRequest request) {
         Map<String, Object> bodyOfResponse = new HashMap<>();
         bodyOfResponse.put("message", "some arguments are wrong");
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
-
-        Map<String, String> violationMessages = new HashMap<>();
-        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            violationMessages.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
-        }
+        Map<String, String> violationMessages = constraintViolations.stream()
+                .collect(Collectors.toMap(
+                        constraintViolation -> constraintViolation.getPropertyPath().toString(),
+                        ConstraintViolation::getMessage
+                ));
 
         bodyOfResponse.put("errors", violationMessages);
 
@@ -51,7 +52,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(value
             = { Exception.class })
     protected ResponseEntity<Object> handleGeneralException(
-            RuntimeException ex, WebRequest request) {
+            Exception ex, WebRequest request) {
         Map<String, Object> bodyOfResponse = new HashMap<>();
         bodyOfResponse.put("message", "General Exception");
         bodyOfResponse.put("errors", ex.getMessage());
