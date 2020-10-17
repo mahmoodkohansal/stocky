@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,14 +20,22 @@ public class UserEntity extends BaseEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message = "username is required")
     private String username;
 
+    @NotBlank(message = "password is required")
     private String password;
 
-    private String mobile;
+    private String code;
 
+    private Date codeSentAt;
+
+    private Integer codeSentCount;
+
+    @NotBlank(message = "first_name is required")
     private String firstName;
 
+    @NotBlank(message = "last_name is required")
     private String lastName;
 
     private Date createdAt;
