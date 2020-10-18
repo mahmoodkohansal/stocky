@@ -1,7 +1,5 @@
 package ir.mahmood.sahame.controller;
 
-import java.util.Objects;
-
 import ir.mahmood.sahame.config.JwtTokenUtil;
 import ir.mahmood.sahame.dto.JwtRequest;
 import ir.mahmood.sahame.dto.JwtResponse;
@@ -15,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
@@ -55,8 +54,14 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<?> saveUser(@RequestBody UserDto userDto) throws Exception {
-        return ResponseEntity.ok(userDetailsService.save(userDto));
+    public ResponseEntity<?> saveUser(@RequestBody @Validated({UserDto.RegisterValidation.class}) UserDto userDto) throws Exception {
+        return ResponseEntity.ok(userDetailsService.register(userDto));
+    }
+
+    @GetMapping(value = "/forget-password")
+    public ResponseEntity<?> forgetPassword(@RequestParam String username) throws Exception {
+        userDetailsService.forgetPassword(username);
+        return ResponseEntity.noContent().build();
     }
 
     private void authenticate(String username, String password) throws Exception {

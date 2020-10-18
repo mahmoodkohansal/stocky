@@ -31,15 +31,4 @@ public class StockDailyEntity extends BaseEntity<Integer> {
 
     @Column(name = "yesterday_price")
     private Integer yesterdayPrice;
-
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public Integer setId() {
-        return null;
-    }
-
 }

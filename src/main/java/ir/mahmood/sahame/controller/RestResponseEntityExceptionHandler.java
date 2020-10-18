@@ -1,5 +1,7 @@
 package ir.mahmood.sahame.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +14,16 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
+
+    @Value("${app.env}")
+    private String appEnv;
 
     @ExceptionHandler(value
             = {IllegalArgumentException.class, IllegalStateException.class})
@@ -52,11 +58,15 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(value
             = { Exception.class })
     protected ResponseEntity<Object> handleGeneralException(
-            Exception ex, WebRequest request) {
-        Map<String, Object> bodyOfResponse = new HashMap<>();
-        bodyOfResponse.put("message", "General Exception");
-        bodyOfResponse.put("errors", ex.getMessage());
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        Exception ex, WebRequest request) throws Exception {
+        if (appEnv.equals("production")) {
+            Map<String, Object> bodyOfResponse = new HashMap<>();
+            bodyOfResponse.put("message", "General Exception");
+            bodyOfResponse.put("errors", ex.getMessage());
+            return handleExceptionInternal(ex, bodyOfResponse,
+                    new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        } else {
+            throw ex;
+        }
     }
 }

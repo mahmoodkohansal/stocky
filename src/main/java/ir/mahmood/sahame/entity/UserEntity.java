@@ -2,16 +2,16 @@ package ir.mahmood.sahame.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
 public class UserEntity extends BaseEntity<Integer> {
@@ -20,10 +20,8 @@ public class UserEntity extends BaseEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "username is required")
     private String username;
 
-    @NotBlank(message = "password is required")
     private String password;
 
     private String code;
@@ -32,10 +30,8 @@ public class UserEntity extends BaseEntity<Integer> {
 
     private Integer codeSentCount;
 
-    @NotBlank(message = "first_name is required")
     private String firstName;
 
-    @NotBlank(message = "last_name is required")
     private String lastName;
 
     private Date createdAt;
@@ -56,12 +52,12 @@ public class UserEntity extends BaseEntity<Integer> {
 
     @Override
     public Integer getId() {
-        return null;
+        return id;
     }
 
     @Override
-    public Integer setId() {
-        return null;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 }

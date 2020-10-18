@@ -37,13 +37,4 @@ public class UserSellEntity extends BaseEntity<Integer> {
     @Column(name = "interest")
     private Long interest;
 
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
-
-    @Override
-    public Integer setId() {
-        return null;
-    }
 }

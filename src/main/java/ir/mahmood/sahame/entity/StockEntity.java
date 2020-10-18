@@ -29,14 +29,4 @@ public class StockEntity extends BaseEntity<Integer> {
     @Column(name = "market_type")
     private MarketType marketType;
 
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public Integer setId() {
-        return null;
-    }
-
 }

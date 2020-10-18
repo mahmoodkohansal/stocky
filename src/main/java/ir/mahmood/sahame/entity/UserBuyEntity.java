@@ -34,14 +34,4 @@ public class UserBuyEntity extends BaseEntity<Integer>{
 
     @Column(name = "buy_at")
     private Date buyAt;
-
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public Integer setId() {
-        return null;
-    }
 }
