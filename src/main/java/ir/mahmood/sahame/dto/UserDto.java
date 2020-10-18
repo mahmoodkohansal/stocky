@@ -15,16 +15,17 @@ import java.util.Date;
 public class UserDto {
 
     public interface RegisterValidation {};
+    public interface ResetPasswordValidation {};
 
     private Integer id;
 
     @NotEmpty(message = "username is required")
     private String username;
 
-    @NotBlank(message = "password is required", groups = { RegisterValidation.class })
+    @NotBlank(message = "password is required", groups = { RegisterValidation.class, ResetPasswordValidation.class })
     private String password;
 
-    @NotBlank(message = "code is required", groups = { RegisterValidation.class })
+    @NotBlank(message = "code is required", groups = { RegisterValidation.class, ResetPasswordValidation.class })
     private String code;
 
     private String codeSentAt;

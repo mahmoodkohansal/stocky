@@ -114,6 +114,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
         userEntity.setId(fetchedUserEntity.getId());
         userEntity.setPassword(bcryptEncoder.encode(userDto.getPassword()));
+        userEntity.setCode(null);
+        userEntity.setCodeSentAt(null);
+        userEntity.setCodeSentCount(null);
 
         // check otp
         return userRepository.save(userEntity);
@@ -142,11 +145,34 @@ public class JwtUserDetailsService implements UserDetailsService {
         transportService.sendSms(username, "کد فراموشی: " + otpCode);
     }
 
+    public void resetPassword(UserDto userDto) {
+        // fetch userEntity from db with username and code and code sent in last 10 minutes
+        Date beforeTenMinutes = new Date(new Date().getTime() - 10 * 60 * 1000);
+        UserEntity userEntity = userRepository.findByUsernameAndCodeAndCodeSentAtAfter(
+                userDto.getUsername(),
+                userDto.getCode(),
+                beforeTenMinutes
+        );
+
+        // throw exception if requested user not found in db
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("Username with this otp code does not found");
+        }
+
+        // change password in userEntity
+        userEntity.setPassword(bcryptEncoder.encode(userDto.getPassword()));
+        userEntity.setCode(null);
+        userEntity.setCodeSentAt(null);
+        userEntity.setCodeSentCount(null);
+
+        // update userEntity with new password
+        userRepository.save(userEntity);
+    }
+
     private void checkCountOfRequestForCode(UserEntity userEntity) throws MaxRequestExceededException {
         long timesAgo = System.currentTimeMillis() - userEntity.getCodeSentAt().getTime();
         if (userEntity.getCodeSentCount() > 3 && timesAgo < 24 * 60 * 60 * 1000) {
             throw new MaxRequestExceededException("More than 5 request in last 24 hour");
         }
     }
-
 }

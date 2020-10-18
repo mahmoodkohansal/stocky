@@ -64,6 +64,12 @@ public class JwtAuthenticationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody @Validated({UserDto.ResetPasswordValidation.class}) UserDto userDto) throws Exception {
+        userDetailsService.resetPassword(userDto);
+        return ResponseEntity.noContent().build();
+    }
+
     private void authenticate(String username, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
