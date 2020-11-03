@@ -8,16 +8,19 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "user_buy")
-public class UserBuyEntity extends BaseEntity<Integer>{
+public class BuyEntity extends BaseEntity<Integer>{
 
     @Id
     @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_id", nullable = false)
     private StockEntity stockEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
     @Column(name = "buy_count")

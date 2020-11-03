@@ -3,9 +3,12 @@ package ir.mahmood.sahame.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class UserEntity extends BaseEntity<Integer> {
+public class UserEntity extends BaseEntity<Integer> implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +44,7 @@ public class UserEntity extends BaseEntity<Integer> {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<UserBuyEntity> userBuyEntities = new ArrayList<UserBuyEntity>();
+    private List<BuyEntity> userBuyEntities = new ArrayList<BuyEntity>();
 
     @OneToMany(
             mappedBy = "userEntity",
@@ -60,4 +63,28 @@ public class UserEntity extends BaseEntity<Integer> {
         this.id = id;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

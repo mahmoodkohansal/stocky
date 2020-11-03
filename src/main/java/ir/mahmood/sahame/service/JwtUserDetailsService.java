@@ -49,6 +49,14 @@ public class JwtUserDetailsService implements UserDetailsService {
                 new ArrayList<>());
     }
 
+    public UserEntity loadUserEntityByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByUsername(username);
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return userEntity;
+    }
+
     public String checkUserLoginStrategy(String username) throws MaxRequestExceededException {
         UserEntity userEntity = userRepository.findByUsername(username);
         if (userEntity == null) {
