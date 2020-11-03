@@ -19,6 +19,7 @@
  - [x] User Management (Spring Security + OTP Mechanism)
  - [ ] User APIS (Buy Stock, Sell Stock, My Stocks)  
  - [ ] Dashboard APIs (pass static data to UI)
+ - [ ] Complete readme (ERD, Postman, Auth Paths)
  - [ ] Develop UI
  
  ## Contributing
